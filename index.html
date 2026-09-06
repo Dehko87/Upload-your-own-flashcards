@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SFDC Admin Exam Flashcards</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="app-header">
+    <h1>Salesforce Admin Exam Flashcards</h1>
+    <nav class="tabs">
+      <button class="tab-btn active" data-view="study">Study</button>
+      <button class="tab-btn" data-view="manage">Manage Cards</button>
+      <button class="tab-btn" data-view="progress">Progress</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- STUDY VIEW -->
+    <section id="view-study" class="view active">
+      <div id="study-setup" class="panel">
+        <h2>Start a Study Session</h2>
+        <label for="topic-filter">Topic</label>
+        <select id="topic-filter"></select>
+        <label for="order-select">Order</label>
+        <select id="order-select">
+          <option value="shuffle">Shuffled</option>
+          <option value="sequential">In order</option>
+        </select>
+        <button id="start-session-btn" class="primary-btn">Start Session</button>
+        <p id="no-cards-msg" class="empty-msg" hidden>No cards yet. Add some in the "Manage Cards" tab.</p>
+      </div>
+
+      <div id="study-session" class="panel" hidden>
+        <div class="session-progress">
+          <span id="session-position"></span>
+          <span id="session-topic-label"></span>
+        </div>
+        <div id="flashcard" class="flashcard">
+          <div class="flashcard-inner">
+            <div class="flashcard-face flashcard-front">
+              <p id="card-question"></p>
+              <span class="flip-hint">Click to reveal answer</span>
+            </div>
+            <div class="flashcard-face flashcard-back">
+              <p id="card-answer"></p>
+            </div>
+          </div>
+        </div>
+        <div id="grade-controls" class="grade-controls" hidden>
+          <button id="grade-wrong-btn" class="grade-btn wrong-btn">Got it wrong</button>
+          <button id="grade-right-btn" class="grade-btn right-btn">Got it right</button>
+        </div>
+        <button id="end-session-btn" class="text-btn">End session early</button>
+      </div>
+
+      <div id="study-results" class="panel" hidden>
+        <h2>Session Complete</h2>
+        <p id="results-score" class="results-score"></p>
+        <div id="results-breakdown"></div>
+        <button id="new-session-btn" class="primary-btn">Start Another Session</button>
+      </div>
+    </section>
+
+    <!-- MANAGE VIEW -->
+    <section id="view-manage" class="view">
+      <div class="panel">
+        <h2>Add a Card</h2>
+        <form id="card-form">
+          <label for="card-topic">Topic</label>
+          <input type="text" id="card-topic" placeholder="e.g. Security & Access" required>
+          <label for="card-question-input">Question</label>
+          <textarea id="card-question-input" rows="2" required></textarea>
+          <label for="card-answer-input">Answer</label>
+          <textarea id="card-answer-input" rows="2" required></textarea>
+          <button type="submit" class="primary-btn">Add Card</button>
+        </form>
+      </div>
+
+      <div class="panel">
+        <h2>Import / Export</h2>
+        <p class="hint">Cards are stored as JSON: <code>[{"topic": "...", "question": "...", "answer": "..."}]</code></p>
+        <textarea id="import-textarea" rows="4" placeholder="Paste JSON here to import"></textarea>
+        <div class="button-row">
+          <button id="import-btn" class="secondary-btn">Import</button>
+          <button id="export-btn" class="secondary-btn">Export All Cards</button>
+        </div>
+        <p id="import-msg" class="import-msg"></p>
+      </div>
+
+      <div class="panel">
+        <h2>Your Cards (<span id="card-count">0</span>)</h2>
+        <div id="card-list"></div>
+      </div>
+    </section>
+
+    <!-- PROGRESS VIEW -->
+    <section id="view-progress" class="view">
+      <div class="panel">
+        <h2>Overall</h2>
+        <div id="overall-stats" class="stats-grid"></div>
+      </div>
+      <div class="panel">
+        <h2>Mastery by Topic</h2>
+        <div id="topic-mastery"></div>
+      </div>
+      <div class="panel">
+        <h2>Session History</h2>
+        <div id="session-history"></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/storage.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

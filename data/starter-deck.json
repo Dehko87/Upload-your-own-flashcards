@@ -1,0 +1,42 @@
+[
+  {
+    "topic": "Security & Access",
+    "question": "What is the difference between a Profile and a Permission Set?",
+    "answer": "A Profile is a single, required baseline of permissions assigned to a user; a Permission Set grants additional permissions on top of a profile and a user can have multiple."
+  },
+  {
+    "topic": "Security & Access",
+    "question": "What are the four levels of the Salesforce sharing/security model, from broadest to most specific?",
+    "answer": "Org-Wide Defaults, Role Hierarchy, Sharing Rules, and Manual Sharing (with Permission Sets/Profiles controlling object/field-level access)."
+  },
+  {
+    "topic": "Data Management",
+    "question": "What tool would you use to import/update more than 50,000 records?",
+    "answer": "Data Loader (supports bulk operations via the Bulk API, unlike Data Import Wizard which caps around 50,000 records)."
+  },
+  {
+    "topic": "Automation",
+    "question": "What has replaced Workflow Rules and Process Builder as Salesforce's recommended automation tool?",
+    "answer": "Flow (specifically Record-Triggered Flow for most workflow/process builder use cases)."
+  },
+  {
+    "topic": "Automation",
+    "question": "What is the order of execution when a record is saved, in relation to validation rules and before-save flows?",
+    "answer": "System validation rules and before-save flows run before the record is committed, then after-save automation (after-save flows, workflow rules, processes, triggers) runs after."
+  },
+  {
+    "topic": "Reports & Dashboards",
+    "question": "What are the four report format types in Salesforce?",
+    "answer": "Tabular, Summary, Matrix, and Joined."
+  },
+  {
+    "topic": "Reports & Dashboards",
+    "question": "How often can a dashboard refresh automatically at most?",
+    "answer": "Every 1 hour (via a scheduled refresh), though it can also be refreshed manually at any time."
+  },
+  {
+    "topic": "Sales & Service Cloud",
+    "question": "What feature routes cases to the right agent or queue automatically based on defined criteria?",
+    "answer": "Case Assignment Rules (or Omni-Channel routing for more advanced skill/capacity-based routing)."
+  }
+]
