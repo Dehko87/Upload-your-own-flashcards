@@ -54,7 +54,9 @@ backing up or editing in bulk, then re-importing).
 
 The app ships with a small starter deck (`data/starter-deck.json`, also
 inlined in `js/app.js`) covering a few core exam topics so there's something
-to try right away — delete or replace any of it freely.
+to try right away — delete or replace any of it freely. Delete cards one at
+a time from the list below, or use **Clear All Cards** (with a confirmation
+prompt) to wipe the whole deck at once and start fresh.
 
 ## Studying
 

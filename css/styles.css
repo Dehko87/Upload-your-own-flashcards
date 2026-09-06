@@ -76,6 +76,14 @@ main {
   font-size: 1.05rem;
 }
 
+.panel-header-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.panel-header-row h2 { margin-bottom: 0; }
+
 label {
   display: block;
   font-size: 0.85rem;
@@ -126,6 +134,14 @@ input[type="text"], select, textarea {
   padding: 0;
   margin-top: 1rem;
 }
+
+.panel-header-row .text-btn {
+  margin-top: 0;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.danger-text-btn:hover { color: var(--danger); }
 
 .button-row { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
 

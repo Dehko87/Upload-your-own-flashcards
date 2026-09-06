@@ -273,6 +273,15 @@ function deleteCard(id) {
   renderManageView();
 }
 
+function clearAllCards() {
+  if (state.cards.length === 0) return;
+  const confirmed = confirm(`Delete all ${state.cards.length} card(s)? This cannot be undone.`);
+  if (!confirmed) return;
+  state.cards = [];
+  Storage.saveCards(state.cards);
+  renderManageView();
+}
+
 function renderManageView() {
   document.getElementById("card-count").textContent = state.cards.length;
   const list = document.getElementById("card-list");
@@ -598,6 +607,7 @@ function init() {
     if (text) importCards(text);
   });
   document.getElementById("export-btn").addEventListener("click", exportCards);
+  document.getElementById("clear-all-btn").addEventListener("click", clearAllCards);
 
   document.getElementById("spreadsheet-input").addEventListener("change", (e) => {
     const file = e.target.files[0];
