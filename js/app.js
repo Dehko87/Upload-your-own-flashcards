@@ -1,4 +1,6 @@
-const OPTION_LETTERS = ["A", "B", "C", "D", "E", "F"];
+const OPTION_LETTERS = ["A", "B", "C", "D", "E", "F", "G", "H"];
+const MIN_OPTIONS = 4;
+const MAX_OPTIONS = 8;
 
 const STARTER_DECK = [
   { topic: "Security & Access", question: "Which single component must every Salesforce user be assigned exactly one of, to set their baseline object, field, and app permissions?", options: ["Permission Set", "Permission Set Group", "Profile", "Public Group"], correctIndex: 2 },
@@ -245,6 +247,7 @@ function isValidCardRecord(item) {
     typeof item.question === "string" &&
     item.question.trim() &&
     Array.isArray(item.options) &&
+    item.options.length <= MAX_OPTIONS &&
     item.options.filter((o) => typeof o === "string" && o.trim()).length >= 2 &&
     Number.isInteger(item.correctIndex) &&
     item.correctIndex >= 0 &&
@@ -308,7 +311,7 @@ function normalizeSpreadsheetRow(row) {
     else if (key === "question") normalized.question = value;
     else if (key === "correct option" || key === "correct" || key === "correctoption") normalized.correctLetter = value;
     else {
-      const optionMatch = key.match(/^option\s*([a-f])$/);
+      const optionMatch = key.match(/^option\s*([a-h])$/);
       if (optionMatch) options[OPTION_LETTERS.indexOf(optionMatch[1].toUpperCase())] = value;
     }
   });
@@ -422,6 +425,42 @@ function renderProgressView() {
   }
 }
 
+// ---------- Manage cards: dynamic option rows ----------
+
+function relabelOptionRows() {
+  const rows = document.querySelectorAll("#option-inputs .option-input-row");
+  rows.forEach((row, i) => {
+    row.querySelector(".option-text-input").placeholder = `Option ${OPTION_LETTERS[i]}`;
+  });
+  document.getElementById("add-option-btn").disabled = rows.length >= MAX_OPTIONS;
+}
+
+function addOptionRow() {
+  const container = document.getElementById("option-inputs");
+  if (container.querySelectorAll(".option-input-row").length >= MAX_OPTIONS) return;
+
+  const row = document.createElement("div");
+  row.className = "option-input-row";
+  row.innerHTML = `
+    <input type="radio" name="correct-option">
+    <input type="text" class="option-text-input" required>
+    <button type="button" class="remove-option-btn" title="Remove option">&times;</button>
+  `;
+  row.querySelector(".remove-option-btn").addEventListener("click", () => {
+    row.remove();
+    relabelOptionRows();
+  });
+  container.appendChild(row);
+  relabelOptionRows();
+}
+
+function resetOptionRows() {
+  const container = document.getElementById("option-inputs");
+  const rows = [...container.querySelectorAll(".option-input-row")];
+  rows.slice(MIN_OPTIONS).forEach((row) => row.remove());
+  relabelOptionRows();
+}
+
 // ---------- Utilities ----------
 
 function escapeHtml(str) {
@@ -444,17 +483,21 @@ function init() {
   document.getElementById("end-session-btn").addEventListener("click", endSessionEarly);
   document.getElementById("new-session-btn").addEventListener("click", () => switchView("study"));
 
+  document.getElementById("add-option-btn").addEventListener("click", addOptionRow);
+
   document.getElementById("card-form").addEventListener("submit", (e) => {
     e.preventDefault();
     const topic = document.getElementById("card-topic").value;
     const question = document.getElementById("card-question-input").value;
     const optionInputs = [...document.querySelectorAll(".option-text-input")];
+    const radios = [...document.querySelectorAll('input[name="correct-option"]')];
     const options = optionInputs.map((input) => input.value.trim());
-    const correctIndex = Number(document.querySelector('input[name="correct-option"]:checked').value);
+    const correctIndex = radios.findIndex((radio) => radio.checked);
 
-    if (!topic.trim() || !question.trim() || options.some((o) => !o)) return;
+    if (!topic.trim() || !question.trim() || options.some((o) => !o) || correctIndex === -1) return;
     addCard(topic, question, options, correctIndex);
     e.target.reset();
+    resetOptionRows();
   });
 
   document.getElementById("import-btn").addEventListener("click", () => {
@@ -469,6 +512,7 @@ function init() {
     e.target.value = "";
   });
 
+  relabelOptionRows();
   renderStudySetup();
 }
 

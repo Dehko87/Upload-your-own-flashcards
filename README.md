@@ -19,15 +19,17 @@ then visit `http://localhost:8000`.
 ## Adding your own cards
 
 Every card is a single-answer multiple-choice question: a topic, a question,
-2–6 answer options, and which one is correct. Go to the **Manage Cards**
-tab. You can:
+4–8 answer options, and which one is correct (real exam questions vary in
+how many options they give). Go to the **Manage Cards** tab. You can:
 
-- Add cards one at a time with the form (Topic / Question / four Options,
-  with a radio button marking the correct one),
+- Add cards one at a time with the form (Topic / Question / Options, with
+  a radio button marking the correct one) — it starts with 4 option fields
+  and has a "+ Add Option" button to grow up to 8,
 - Upload a spreadsheet (`.csv` or `.xlsx`) with `Topic`, `Question`,
-  `Option A`–`Option D`, and `Correct Option` (the letter A/B/C/D)
-  columns — download `data/flashcard-template.xlsx` from that tab, fill it
-  in, and upload it back to add every row as a card, or
+  `Option A`–`Option H`, and `Correct Option` (the matching letter)
+  columns — fill in as few as 4 or as many as 8 option columns per row,
+  leaving the rest blank. Download `data/flashcard-template.xlsx` from that
+  tab, fill it in, and upload it back to add every row as a card, or
 - Paste a JSON array into the Import box, in this shape:
 
 ```json

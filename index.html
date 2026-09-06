@@ -62,25 +62,26 @@
           <input type="text" id="card-topic" placeholder="e.g. Security & Access" required>
           <label for="card-question-input">Question</label>
           <textarea id="card-question-input" rows="2" required></textarea>
-          <label>Options (select the correct one)</label>
-          <div class="option-inputs">
+          <label>Options (select the correct one, 4&ndash;8 total)</label>
+          <div id="option-inputs" class="option-inputs">
             <div class="option-input-row">
-              <input type="radio" name="correct-option" value="0" checked>
+              <input type="radio" name="correct-option" checked>
               <input type="text" class="option-text-input" placeholder="Option A" required>
             </div>
             <div class="option-input-row">
-              <input type="radio" name="correct-option" value="1">
+              <input type="radio" name="correct-option">
               <input type="text" class="option-text-input" placeholder="Option B" required>
             </div>
             <div class="option-input-row">
-              <input type="radio" name="correct-option" value="2">
+              <input type="radio" name="correct-option">
               <input type="text" class="option-text-input" placeholder="Option C" required>
             </div>
             <div class="option-input-row">
-              <input type="radio" name="correct-option" value="3">
+              <input type="radio" name="correct-option">
               <input type="text" class="option-text-input" placeholder="Option D" required>
             </div>
           </div>
+          <button type="button" id="add-option-btn" class="secondary-btn">+ Add Option</button>
           <button type="submit" class="primary-btn">Add Card</button>
         </form>
       </div>
@@ -89,8 +90,8 @@
         <h2>Upload a Spreadsheet</h2>
         <p class="hint">
           Add many multiple-choice cards at once from a <code>.csv</code> or <code>.xlsx</code> file with
-          <code>Topic</code>, <code>Question</code>, <code>Option A</code>&ndash;<code>Option D</code>,
-          and <code>Correct Option</code> (A, B, C, or D) columns.
+          <code>Topic</code>, <code>Question</code>, <code>Option A</code>&ndash;<code>Option H</code>
+          (fill in as few as 4 or as many as 8), and <code>Correct Option</code> (the matching letter) columns.
           <a id="template-download-link" href="data/flashcard-template.xlsx" download="flashcard-template.xlsx">Download the template</a>,
           fill it in, then upload it below.
         </p>
