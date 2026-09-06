@@ -398,8 +398,9 @@ function importSpreadsheetFile(file) {
           ? `Imported ${added} card(s) from "${file.name}".`
           : `No valid rows found in "${file.name}". Make sure it has Topic/Question/Option A-H/Correct Option columns.`;
     } catch (err) {
+      console.error("Spreadsheet import failed:", err);
       msg.style.color = "var(--danger)";
-      msg.textContent = "Could not parse that file. Make sure it's a valid .csv or .xlsx.";
+      msg.textContent = `Could not parse that file: ${err.message || err}`;
     }
   };
   reader.readAsArrayBuffer(file);
