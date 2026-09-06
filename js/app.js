@@ -273,16 +273,34 @@ function deleteCard(id) {
   renderManageView();
 }
 
+let clearAllConfirmTimeout = null;
+
+function resetClearAllButton() {
+  clearTimeout(clearAllConfirmTimeout);
+  const btn = document.getElementById("clear-all-btn");
+  btn.textContent = "Clear All Cards";
+  btn.classList.remove("confirming");
+}
+
 function clearAllCards() {
+  const btn = document.getElementById("clear-all-btn");
   if (state.cards.length === 0) return;
-  const confirmed = confirm(`Delete all ${state.cards.length} card(s)? This cannot be undone.`);
-  if (!confirmed) return;
-  state.cards = [];
-  Storage.saveCards(state.cards);
-  renderManageView();
+
+  if (btn.classList.contains("confirming")) {
+    resetClearAllButton();
+    state.cards = [];
+    Storage.saveCards(state.cards);
+    renderManageView();
+    return;
+  }
+
+  btn.classList.add("confirming");
+  btn.textContent = `Click again to delete all ${state.cards.length}`;
+  clearAllConfirmTimeout = setTimeout(resetClearAllButton, 4000);
 }
 
 function renderManageView() {
+  resetClearAllButton();
   document.getElementById("card-count").textContent = state.cards.length;
   const list = document.getElementById("card-list");
 
