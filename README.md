@@ -18,18 +18,22 @@ then visit `http://localhost:8000`.
 
 ## Adding your own cards
 
-Every card is a single-answer multiple-choice question: a topic, a question,
-4–8 answer options, and which one is correct (real exam questions vary in
-how many options they give). Go to the **Manage Cards** tab. You can:
+Every card is a multiple-choice question: a topic, a question, 4–8 answer
+options, and which one (or more) are correct — real exam questions vary in
+option count, and some ask you to pick more than one ("Choose 2", "Choose
+3"). Go to the **Manage Cards** tab. You can:
 
-- Add cards one at a time with the form (Topic / Question / Options, with
-  a radio button marking the correct one) — it starts with 4 option fields
-  and has a "+ Add Option" button to grow up to 8,
+- Add cards one at a time with the form (Topic / Question / Options) — check
+  one box to mark a single-answer question, or check several to make it a
+  "choose N" question. It starts with 4 option fields and has a
+  "+ Add Option" button to grow up to 8,
 - Upload a spreadsheet (`.csv` or `.xlsx`) with `Topic`, `Question`,
-  `Option A`–`Option H`, and `Correct Option` (the matching letter)
-  columns — fill in as few as 4 or as many as 8 option columns per row,
-  leaving the rest blank. Download `data/flashcard-template.xlsx` from that
-  tab, fill it in, and upload it back to add every row as a card, or
+  `Option A`–`Option H`, and `Correct Option` columns — fill in as few as 4
+  or as many as 8 option columns per row, leaving the rest blank. For
+  `Correct Option`, put one letter for a single-answer question, or several
+  letters separated by commas (e.g. `A, C`) for a "choose N" question.
+  Download `data/flashcard-template.xlsx` from that tab, fill it in, and
+  upload it back to add every row as a card, or
 - Paste a JSON array into the Import box, in this shape:
 
 ```json
@@ -38,14 +42,15 @@ how many options they give). Go to the **Manage Cards** tab. You can:
     "topic": "Security & Access",
     "question": "...",
     "options": ["...", "...", "...", "..."],
-    "correctIndex": 2
+    "correctIndexes": [2]
   }
 ]
 ```
 
-(`correctIndex` is the 0-based position of the right option in the `options`
-array.) Use **Export All Cards** to download your current deck as JSON
-(useful for backing up or editing in bulk, then re-importing).
+(`correctIndexes` lists the 0-based position(s) of the right option(s) in
+the `options` array — more than one entry makes it a "choose N" question.)
+Use **Export All Cards** to download your current deck as JSON (useful for
+backing up or editing in bulk, then re-importing).
 
 The app ships with a small starter deck (`data/starter-deck.json`, also
 inlined in `js/app.js`) covering a few core exam topics so there's something
@@ -54,11 +59,18 @@ to try right away — delete or replace any of it freely.
 ## Studying
 
 In the **Study** tab, pick a topic (or "All Topics") and an order
-(shuffled/sequential), then answer each question by clicking one of the
-options: it's graded immediately, with the correct answer highlighted green
-and (if you picked wrong) your choice highlighted red. Click "Next Question"
-to continue. At the end of a session you'll see your score and a per-topic
-breakdown.
+(shuffled/sequential), then answer each question:
+
+- **Single-answer questions** grade immediately when you click an option —
+  the correct answer is highlighted green, and your choice is highlighted
+  red if it was wrong.
+- **"Choose N" questions** show a "Select N answers" hint; click to toggle
+  options, then click "Submit Answer" once you've picked that many. It's
+  graded all-or-nothing (you must select exactly the right set to count it
+  correct), matching how the real exam grades these.
+
+Click "Next Question" to continue. At the end of a session you'll see your
+score and a per-topic breakdown.
 
 ## Progress
 

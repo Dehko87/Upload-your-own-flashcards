@@ -109,6 +109,7 @@ input[type="text"], select, textarea {
   padding: 0.65rem 1.2rem;
 }
 .primary-btn:hover { background: var(--primary-hover); }
+.primary-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .secondary-btn {
   background: #fff;
@@ -146,9 +147,18 @@ input[type="text"], select, textarea {
 }
 
 #card-question {
-  margin: 0 0 1.1rem;
+  margin: 0 0 0.8rem;
   font-size: 1.1rem;
   font-weight: 600;
+}
+
+.select-hint {
+  margin: -0.4rem 0 0.9rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--primary);
 }
 
 .option-list {
@@ -202,6 +212,14 @@ input[type="text"], select, textarea {
 }
 .option-btn.incorrect .option-letter { background: var(--danger); color: #fff; }
 
+.option-btn.selected {
+  background: #eaf2fb;
+  border-color: var(--primary);
+}
+.option-btn.selected .option-letter { background: var(--primary); color: #fff; }
+
+.option-list.multi .option-letter { border-radius: 6px; }
+
 .option-inputs {
   display: flex;
   flex-direction: column;
@@ -216,7 +234,7 @@ input[type="text"], select, textarea {
 }
 
 .option-input-row input[type="text"] { flex: 1; }
-.option-input-row input[type="radio"] { flex: none; width: 1.1rem; height: 1.1rem; }
+.option-input-row input[type="checkbox"] { flex: none; width: 1.1rem; height: 1.1rem; }
 
 .remove-option-btn {
   flex: none;
@@ -255,6 +273,12 @@ input[type="text"], select, textarea {
   border-radius: 999px;
   padding: 0.1rem 0.6rem;
   margin-bottom: 0.4rem;
+  margin-right: 0.35rem;
+}
+
+.card-item .card-topic-tag.multi-tag {
+  color: #8a5a00;
+  background: #fdf1da;
 }
 
 .card-item .card-q { font-weight: 600; margin: 0.2rem 0; }

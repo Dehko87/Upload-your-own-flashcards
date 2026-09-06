@@ -3,48 +3,60 @@
     "topic": "Security & Access",
     "question": "Which single component must every Salesforce user be assigned exactly one of, to set their baseline object, field, and app permissions?",
     "options": ["Permission Set", "Permission Set Group", "Profile", "Public Group"],
-    "correctIndex": 2
+    "correctIndexes": [2]
   },
   {
     "topic": "Security & Access",
     "question": "Which sharing model setting determines the widest access that all internal users have to records by default?",
     "options": ["Sharing Rules", "Role Hierarchy", "Manual Sharing", "Organization-Wide Defaults"],
-    "correctIndex": 3
+    "correctIndexes": [3]
+  },
+  {
+    "topic": "Security & Access",
+    "question": "Which two of these can be used to grant a user additional object and field permissions beyond their Profile? (Choose 2)",
+    "options": ["Permission Set", "Sharing Rule", "Permission Set Group", "Queue"],
+    "correctIndexes": [0, 2]
   },
   {
     "topic": "Data Management",
     "question": "Which tool should an admin use to insert or update more than 50,000 records at once?",
     "options": ["Data Import Wizard", "Data Loader", "Report Export", "Change Sets"],
-    "correctIndex": 1
+    "correctIndexes": [1]
   },
   {
     "topic": "Automation",
     "question": "Which Salesforce automation tool is now recommended for record-triggered logic, replacing Workflow Rules and Process Builder?",
     "options": ["Approval Processes", "Apex Triggers", "Flow", "Validation Rules"],
-    "correctIndex": 2
+    "correctIndexes": [2]
   },
   {
     "topic": "Automation",
     "question": "Which of the following runs first during the record save order of execution?",
     "options": ["After-save Flow", "Workflow Rule field update", "Validation Rule", "Apex trigger (after insert)"],
-    "correctIndex": 2
+    "correctIndexes": [2]
+  },
+  {
+    "topic": "Automation",
+    "question": "Which three of these are valid Flow trigger types? (Choose 3)",
+    "options": ["Record-Triggered", "Schedule-Triggered", "Platform Event-Triggered", "Report-Triggered"],
+    "correctIndexes": [0, 1, 2]
   },
   {
     "topic": "Reports & Dashboards",
     "question": "Which report format groups rows by more than one field and includes subtotals for each group plus a grand total?",
     "options": ["Tabular", "Summary", "Matrix", "Joined"],
-    "correctIndex": 1
+    "correctIndexes": [1]
   },
   {
     "topic": "Reports & Dashboards",
     "question": "What is the maximum frequency at which a dashboard can be scheduled to refresh automatically?",
     "options": ["Every 15 minutes", "Every 1 hour", "Every 24 hours", "Dashboards cannot be scheduled"],
-    "correctIndex": 1
+    "correctIndexes": [1]
   },
   {
     "topic": "Sales & Service Cloud",
     "question": "Which feature automatically assigns incoming Cases to the correct queue or agent based on predefined criteria?",
     "options": ["Web-to-Case", "Case Assignment Rules", "Escalation Rules", "Entitlement Process"],
-    "correctIndex": 1
+    "correctIndexes": [1]
   }
 ]

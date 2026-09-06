@@ -3,14 +3,16 @@ const MIN_OPTIONS = 4;
 const MAX_OPTIONS = 8;
 
 const STARTER_DECK = [
-  { topic: "Security & Access", question: "Which single component must every Salesforce user be assigned exactly one of, to set their baseline object, field, and app permissions?", options: ["Permission Set", "Permission Set Group", "Profile", "Public Group"], correctIndex: 2 },
-  { topic: "Security & Access", question: "Which sharing model setting determines the widest access that all internal users have to records by default?", options: ["Sharing Rules", "Role Hierarchy", "Manual Sharing", "Organization-Wide Defaults"], correctIndex: 3 },
-  { topic: "Data Management", question: "Which tool should an admin use to insert or update more than 50,000 records at once?", options: ["Data Import Wizard", "Data Loader", "Report Export", "Change Sets"], correctIndex: 1 },
-  { topic: "Automation", question: "Which Salesforce automation tool is now recommended for record-triggered logic, replacing Workflow Rules and Process Builder?", options: ["Approval Processes", "Apex Triggers", "Flow", "Validation Rules"], correctIndex: 2 },
-  { topic: "Automation", question: "Which of the following runs first during the record save order of execution?", options: ["After-save Flow", "Workflow Rule field update", "Validation Rule", "Apex trigger (after insert)"], correctIndex: 2 },
-  { topic: "Reports & Dashboards", question: "Which report format groups rows by more than one field and includes subtotals for each group plus a grand total?", options: ["Tabular", "Summary", "Matrix", "Joined"], correctIndex: 1 },
-  { topic: "Reports & Dashboards", question: "What is the maximum frequency at which a dashboard can be scheduled to refresh automatically?", options: ["Every 15 minutes", "Every 1 hour", "Every 24 hours", "Dashboards cannot be scheduled"], correctIndex: 1 },
-  { topic: "Sales & Service Cloud", question: "Which feature automatically assigns incoming Cases to the correct queue or agent based on predefined criteria?", options: ["Web-to-Case", "Case Assignment Rules", "Escalation Rules", "Entitlement Process"], correctIndex: 1 },
+  { topic: "Security & Access", question: "Which single component must every Salesforce user be assigned exactly one of, to set their baseline object, field, and app permissions?", options: ["Permission Set", "Permission Set Group", "Profile", "Public Group"], correctIndexes: [2] },
+  { topic: "Security & Access", question: "Which sharing model setting determines the widest access that all internal users have to records by default?", options: ["Sharing Rules", "Role Hierarchy", "Manual Sharing", "Organization-Wide Defaults"], correctIndexes: [3] },
+  { topic: "Security & Access", question: "Which two of these can be used to grant a user additional object and field permissions beyond their Profile? (Choose 2)", options: ["Permission Set", "Sharing Rule", "Permission Set Group", "Queue"], correctIndexes: [0, 2] },
+  { topic: "Data Management", question: "Which tool should an admin use to insert or update more than 50,000 records at once?", options: ["Data Import Wizard", "Data Loader", "Report Export", "Change Sets"], correctIndexes: [1] },
+  { topic: "Automation", question: "Which Salesforce automation tool is now recommended for record-triggered logic, replacing Workflow Rules and Process Builder?", options: ["Approval Processes", "Apex Triggers", "Flow", "Validation Rules"], correctIndexes: [2] },
+  { topic: "Automation", question: "Which of the following runs first during the record save order of execution?", options: ["After-save Flow", "Workflow Rule field update", "Validation Rule", "Apex trigger (after insert)"], correctIndexes: [2] },
+  { topic: "Automation", question: "Which three of these are valid Flow trigger types? (Choose 3)", options: ["Record-Triggered", "Schedule-Triggered", "Platform Event-Triggered", "Report-Triggered"], correctIndexes: [0, 1, 2] },
+  { topic: "Reports & Dashboards", question: "Which report format groups rows by more than one field and includes subtotals for each group plus a grand total?", options: ["Tabular", "Summary", "Matrix", "Joined"], correctIndexes: [1] },
+  { topic: "Reports & Dashboards", question: "What is the maximum frequency at which a dashboard can be scheduled to refresh automatically?", options: ["Every 15 minutes", "Every 1 hour", "Every 24 hours", "Dashboards cannot be scheduled"], correctIndexes: [1] },
+  { topic: "Sales & Service Cloud", question: "Which feature automatically assigns incoming Cases to the correct queue or agent based on predefined criteria?", options: ["Web-to-Case", "Case Assignment Rules", "Escalation Rules", "Entitlement Process"], correctIndexes: [1] },
 ];
 
 function makeId() {
@@ -33,6 +35,10 @@ function loadCards() {
 
 function uniqueTopics() {
   return [...new Set(state.cards.map((c) => c.topic))].sort();
+}
+
+function isMultiAnswer(card) {
+  return card.correctIndexes.length > 1;
 }
 
 // ---------- Navigation ----------
@@ -85,6 +91,7 @@ function startSession() {
     correctCount: 0,
     graded: [],
     answered: false,
+    selected: new Set(),
     topicLabel: topic === "__all__" ? "All Topics" : topic,
   };
 
@@ -100,13 +107,24 @@ function showCurrentCard() {
   const s = state.session;
   const card = s.queue[s.index];
   s.answered = false;
+  s.selected = new Set();
 
   document.getElementById("session-position").textContent = `Question ${s.index + 1} of ${s.queue.length}`;
   document.getElementById("session-topic-label").textContent = s.topicLabel;
   document.getElementById("card-question").textContent = card.question;
   document.getElementById("next-card-btn").hidden = true;
 
+  const multi = isMultiAnswer(card);
+  const selectHint = document.getElementById("select-hint");
+  selectHint.hidden = !multi;
+  selectHint.textContent = multi ? `Select ${card.correctIndexes.length} answers` : "";
+
+  const submitBtn = document.getElementById("submit-answer-btn");
+  submitBtn.hidden = !multi;
+  submitBtn.disabled = true;
+
   const optionList = document.getElementById("option-list");
+  optionList.className = multi ? "option-list multi" : "option-list";
   optionList.innerHTML = card.options
     .map(
       (option, i) => `
@@ -118,30 +136,59 @@ function showCurrentCard() {
     .join("");
 
   optionList.querySelectorAll(".option-btn").forEach((btn) => {
-    btn.addEventListener("click", () => selectOption(Number(btn.dataset.optionIndex)));
+    btn.addEventListener("click", () => handleOptionClick(Number(btn.dataset.optionIndex)));
   });
 }
 
-function selectOption(chosenIndex) {
+function handleOptionClick(index) {
+  const s = state.session;
+  if (s.answered) return;
+  const card = s.queue[s.index];
+
+  if (!isMultiAnswer(card)) {
+    gradeAnswer(new Set([index]));
+    return;
+  }
+
+  const btn = document.querySelector(`#option-list .option-btn[data-option-index="${index}"]`);
+  if (s.selected.has(index)) {
+    s.selected.delete(index);
+    btn.classList.remove("selected");
+  } else {
+    s.selected.add(index);
+    btn.classList.add("selected");
+  }
+  document.getElementById("submit-answer-btn").disabled = s.selected.size === 0;
+}
+
+function gradeAnswer(chosenIndexes) {
   const s = state.session;
   if (s.answered) return;
   s.answered = true;
 
   const card = s.queue[s.index];
-  const correct = chosenIndex === card.correctIndex;
+  const correctSet = new Set(card.correctIndexes);
+  const correct = chosenIndexes.size === correctSet.size && [...chosenIndexes].every((i) => correctSet.has(i));
 
   document.querySelectorAll("#option-list .option-btn").forEach((btn) => {
     const i = Number(btn.dataset.optionIndex);
     btn.disabled = true;
-    if (i === card.correctIndex) btn.classList.add("correct");
-    else if (i === chosenIndex) btn.classList.add("incorrect");
+    btn.classList.remove("selected");
+    if (correctSet.has(i)) btn.classList.add("correct");
+    else if (chosenIndexes.has(i)) btn.classList.add("incorrect");
   });
+
+  document.getElementById("submit-answer-btn").hidden = true;
 
   Storage.recordAnswer(card.id, correct);
   s.graded.push({ card, correct });
   if (correct) s.correctCount++;
 
   document.getElementById("next-card-btn").hidden = false;
+}
+
+function submitMultiAnswer() {
+  gradeAnswer(new Set(state.session.selected));
 }
 
 function goToNextCard() {
@@ -197,8 +244,8 @@ function finishSession() {
 
 // ---------- Manage cards ----------
 
-function addCard(topic, question, options, correctIndex) {
-  const card = { id: makeId(), topic: topic.trim(), question: question.trim(), options, correctIndex };
+function addCard(topic, question, options, correctIndexes) {
+  const card = { id: makeId(), topic: topic.trim(), question: question.trim(), options, correctIndexes };
   state.cards.push(card);
   Storage.saveCards(state.cards);
   renderManageView();
@@ -221,19 +268,21 @@ function renderManageView() {
 
   list.innerHTML = [...state.cards]
     .sort((a, b) => a.topic.localeCompare(b.topic))
-    .map(
-      (c) => `
+    .map((c) => {
+      const correctSet = new Set(c.correctIndexes);
+      return `
       <div class="card-item">
         <span class="card-topic-tag">${escapeHtml(c.topic)}</span>
+        ${c.correctIndexes.length > 1 ? `<span class="card-topic-tag multi-tag">Choose ${c.correctIndexes.length}</span>` : ""}
         <p class="card-q">${escapeHtml(c.question)}</p>
         <ol class="card-options" type="A">
-          ${c.options.map((opt, i) => `<li class="${i === c.correctIndex ? "correct-option" : ""}">${escapeHtml(opt)}</li>`).join("")}
+          ${c.options.map((opt, i) => `<li class="${correctSet.has(i) ? "correct-option" : ""}">${escapeHtml(opt)}</li>`).join("")}
         </ol>
         <div class="card-actions">
           <button data-delete-id="${c.id}">Delete</button>
         </div>
-      </div>`
-    )
+      </div>`;
+    })
     .join("");
 
   list.querySelectorAll("[data-delete-id]").forEach((btn) => {
@@ -249,9 +298,11 @@ function isValidCardRecord(item) {
     Array.isArray(item.options) &&
     item.options.length <= MAX_OPTIONS &&
     item.options.filter((o) => typeof o === "string" && o.trim()).length >= 2 &&
-    Number.isInteger(item.correctIndex) &&
-    item.correctIndex >= 0 &&
-    item.correctIndex < item.options.length
+    Array.isArray(item.correctIndexes) &&
+    item.correctIndexes.length >= 1 &&
+    item.correctIndexes.length < item.options.length &&
+    item.correctIndexes.every((i) => Number.isInteger(i) && i >= 0 && i < item.options.length) &&
+    new Set(item.correctIndexes).size === item.correctIndexes.length
   );
 }
 
@@ -264,7 +315,7 @@ function addCardsFromRecords(records) {
         topic: (item.topic || "General").trim(),
         question: item.question.trim(),
         options: item.options.map((o) => String(o).trim()),
-        correctIndex: item.correctIndex,
+        correctIndexes: [...item.correctIndexes].sort((a, b) => a - b),
       });
       added++;
     }
@@ -309,7 +360,7 @@ function normalizeSpreadsheetRow(row) {
 
     if (key === "topic") normalized.topic = value;
     else if (key === "question") normalized.question = value;
-    else if (key === "correct option" || key === "correct" || key === "correctoption") normalized.correctLetter = value;
+    else if (key === "correct option" || key === "correct" || key === "correctoption") normalized.correctLetters = value;
     else {
       const optionMatch = key.match(/^option\s*([a-h])$/);
       if (optionMatch) options[OPTION_LETTERS.indexOf(optionMatch[1].toUpperCase())] = value;
@@ -317,8 +368,10 @@ function normalizeSpreadsheetRow(row) {
   });
 
   normalized.options = options.filter((o) => o !== undefined && o !== "");
-  const letter = (normalized.correctLetter || "").toUpperCase();
-  normalized.correctIndex = OPTION_LETTERS.indexOf(letter);
+  normalized.correctIndexes = (normalized.correctLetters || "")
+    .split(/[,\s/]+/)
+    .map((letter) => OPTION_LETTERS.indexOf(letter.trim().toUpperCase()))
+    .filter((i) => i !== -1);
   return normalized;
 }
 
@@ -343,7 +396,7 @@ function importSpreadsheetFile(file) {
       msg.textContent =
         added > 0
           ? `Imported ${added} card(s) from "${file.name}".`
-          : `No valid rows found in "${file.name}". Make sure it has Topic/Question/Option A-D/Correct Option columns.`;
+          : `No valid rows found in "${file.name}". Make sure it has Topic/Question/Option A-H/Correct Option columns.`;
     } catch (err) {
       msg.style.color = "var(--danger)";
       msg.textContent = "Could not parse that file. Make sure it's a valid .csv or .xlsx.";
@@ -353,7 +406,7 @@ function importSpreadsheetFile(file) {
 }
 
 function exportCards() {
-  const exportable = state.cards.map(({ topic, question, options, correctIndex }) => ({ topic, question, options, correctIndex }));
+  const exportable = state.cards.map(({ topic, question, options, correctIndexes }) => ({ topic, question, options, correctIndexes }));
   const blob = new Blob([JSON.stringify(exportable, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -442,7 +495,7 @@ function addOptionRow() {
   const row = document.createElement("div");
   row.className = "option-input-row";
   row.innerHTML = `
-    <input type="radio" name="correct-option">
+    <input type="checkbox" name="correct-option">
     <input type="text" class="option-text-input" required>
     <button type="button" class="remove-option-btn" title="Remove option">&times;</button>
   `;
@@ -479,6 +532,7 @@ function init() {
   });
 
   document.getElementById("start-session-btn").addEventListener("click", startSession);
+  document.getElementById("submit-answer-btn").addEventListener("click", submitMultiAnswer);
   document.getElementById("next-card-btn").addEventListener("click", goToNextCard);
   document.getElementById("end-session-btn").addEventListener("click", endSessionEarly);
   document.getElementById("new-session-btn").addEventListener("click", () => switchView("study"));
@@ -490,12 +544,12 @@ function init() {
     const topic = document.getElementById("card-topic").value;
     const question = document.getElementById("card-question-input").value;
     const optionInputs = [...document.querySelectorAll(".option-text-input")];
-    const radios = [...document.querySelectorAll('input[name="correct-option"]')];
+    const checkboxes = [...document.querySelectorAll('input[name="correct-option"]')];
     const options = optionInputs.map((input) => input.value.trim());
-    const correctIndex = radios.findIndex((radio) => radio.checked);
+    const correctIndexes = checkboxes.map((cb, i) => (cb.checked ? i : -1)).filter((i) => i !== -1);
 
-    if (!topic.trim() || !question.trim() || options.some((o) => !o) || correctIndex === -1) return;
-    addCard(topic, question, options, correctIndex);
+    if (!topic.trim() || !question.trim() || options.some((o) => !o) || correctIndexes.length === 0) return;
+    addCard(topic, question, options, correctIndexes);
     e.target.reset();
     resetOptionRows();
   });

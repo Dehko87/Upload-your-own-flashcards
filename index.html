@@ -39,8 +39,10 @@
         </div>
         <div class="flashcard">
           <p id="card-question"></p>
+          <p id="select-hint" class="select-hint" hidden></p>
           <div id="option-list" class="option-list"></div>
         </div>
+        <button id="submit-answer-btn" class="primary-btn" hidden disabled>Submit Answer</button>
         <button id="next-card-btn" class="primary-btn" hidden>Next Question</button>
         <button id="end-session-btn" class="text-btn">End session early</button>
       </div>
@@ -62,22 +64,22 @@
           <input type="text" id="card-topic" placeholder="e.g. Security & Access" required>
           <label for="card-question-input">Question</label>
           <textarea id="card-question-input" rows="2" required></textarea>
-          <label>Options (select the correct one, 4&ndash;8 total)</label>
+          <label>Options (check all correct ones &mdash; check more than one for a "choose N" question; 4&ndash;8 options total)</label>
           <div id="option-inputs" class="option-inputs">
             <div class="option-input-row">
-              <input type="radio" name="correct-option" checked>
+              <input type="checkbox" name="correct-option">
               <input type="text" class="option-text-input" placeholder="Option A" required>
             </div>
             <div class="option-input-row">
-              <input type="radio" name="correct-option">
+              <input type="checkbox" name="correct-option">
               <input type="text" class="option-text-input" placeholder="Option B" required>
             </div>
             <div class="option-input-row">
-              <input type="radio" name="correct-option">
+              <input type="checkbox" name="correct-option">
               <input type="text" class="option-text-input" placeholder="Option C" required>
             </div>
             <div class="option-input-row">
-              <input type="radio" name="correct-option">
+              <input type="checkbox" name="correct-option">
               <input type="text" class="option-text-input" placeholder="Option D" required>
             </div>
           </div>
@@ -91,7 +93,8 @@
         <p class="hint">
           Add many multiple-choice cards at once from a <code>.csv</code> or <code>.xlsx</code> file with
           <code>Topic</code>, <code>Question</code>, <code>Option A</code>&ndash;<code>Option H</code>
-          (fill in as few as 4 or as many as 8), and <code>Correct Option</code> (the matching letter) columns.
+          (fill in as few as 4 or as many as 8), and <code>Correct Option</code> columns. For a "choose N"
+          question, put every correct letter in that cell separated by commas (e.g. <code>A, C</code>).
           <a id="template-download-link" href="data/flashcard-template.xlsx" download="flashcard-template.xlsx">Download the template</a>,
           fill it in, then upload it below.
         </p>
@@ -101,7 +104,7 @@
 
       <div class="panel">
         <h2>Import / Export JSON</h2>
-        <p class="hint">Cards are stored as JSON: <code>[{"topic": "...", "question": "...", "options": ["...", "...", "...", "..."], "correctIndex": 0}]</code> (<code>correctIndex</code> is the 0-based position of the right option).</p>
+        <p class="hint">Cards are stored as JSON: <code>[{"topic": "...", "question": "...", "options": ["...", "...", "...", "..."], "correctIndexes": [0]}]</code> (<code>correctIndexes</code> lists the 0-based positions of every right option &mdash; more than one means a "choose N" question).</p>
         <textarea id="import-textarea" rows="4" placeholder="Paste JSON here to import"></textarea>
         <div class="button-row">
           <button id="import-btn" class="secondary-btn">Import</button>
