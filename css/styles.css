@@ -139,62 +139,84 @@ input[type="text"], select, textarea {
 }
 
 .flashcard {
-  perspective: 1200px;
-  height: 220px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: #eef4fb;
+  padding: 1.5rem;
+}
+
+#card-question {
+  margin: 0 0 1.1rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.option-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.option-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  text-align: left;
+  padding: 0.65rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: var(--text);
   cursor: pointer;
 }
 
-.flashcard-inner {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  transition: transform 0.4s;
-  transform-style: preserve-3d;
-}
+.option-btn:hover:not(:disabled) { border-color: var(--primary); }
+.option-btn:disabled { cursor: default; }
 
-.flashcard.flipped .flashcard-inner {
-  transform: rotateY(180deg);
-}
-
-.flashcard-face {
-  position: absolute;
-  inset: 0;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+.option-letter {
+  flex: none;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  background: var(--bg);
+  color: var(--muted);
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  text-align: center;
-  padding: 1.5rem;
-  backface-visibility: hidden;
+  font-size: 0.8rem;
+  font-weight: 600;
 }
 
-.flashcard-front { background: #eef4fb; }
-.flashcard-back { background: #eefaf1; transform: rotateY(180deg); }
-
-.flip-hint {
-  position: absolute;
-  bottom: 1rem;
-  font-size: 0.75rem;
-  color: var(--muted);
+.option-btn.correct {
+  background: #eafaf1;
+  border-color: var(--success);
 }
+.option-btn.correct .option-letter { background: var(--success); color: #fff; }
 
-.grade-controls {
+.option-btn.incorrect {
+  background: #fdedeb;
+  border-color: var(--danger);
+}
+.option-btn.incorrect .option-letter { background: var(--danger); color: #fff; }
+
+.option-inputs {
   display: flex;
-  gap: 0.75rem;
-  margin-top: 1rem;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
 }
 
-.grade-btn {
-  flex: 1;
-  padding: 0.7rem;
-  border: none;
-  color: #fff;
+.option-input-row {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
 }
 
-.wrong-btn { background: var(--danger); }
-.right-btn { background: var(--success); }
+.option-input-row input[type="text"] { flex: 1; }
+.option-input-row input[type="radio"] { flex: none; width: 1.1rem; height: 1.1rem; }
 
 .results-score {
   font-size: 1.5rem;
@@ -219,7 +241,9 @@ input[type="text"], select, textarea {
 }
 
 .card-item .card-q { font-weight: 600; margin: 0.2rem 0; }
-.card-item .card-a { color: var(--muted); margin: 0.2rem 0; }
+
+.card-item .card-options { margin: 0.4rem 0 0; padding-left: 1.1rem; color: var(--muted); font-size: 0.9rem; }
+.card-item .card-options li.correct-option { color: var(--success); font-weight: 600; }
 
 .card-item .card-actions { margin-top: 0.5rem; }
 .card-item .card-actions button {

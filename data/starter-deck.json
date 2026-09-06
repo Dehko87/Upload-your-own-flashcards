@@ -1,42 +1,50 @@
 [
   {
     "topic": "Security & Access",
-    "question": "What is the difference between a Profile and a Permission Set?",
-    "answer": "A Profile is a single, required baseline of permissions assigned to a user; a Permission Set grants additional permissions on top of a profile and a user can have multiple."
+    "question": "Which single component must every Salesforce user be assigned exactly one of, to set their baseline object, field, and app permissions?",
+    "options": ["Permission Set", "Permission Set Group", "Profile", "Public Group"],
+    "correctIndex": 2
   },
   {
     "topic": "Security & Access",
-    "question": "What are the four levels of the Salesforce sharing/security model, from broadest to most specific?",
-    "answer": "Org-Wide Defaults, Role Hierarchy, Sharing Rules, and Manual Sharing (with Permission Sets/Profiles controlling object/field-level access)."
+    "question": "Which sharing model setting determines the widest access that all internal users have to records by default?",
+    "options": ["Sharing Rules", "Role Hierarchy", "Manual Sharing", "Organization-Wide Defaults"],
+    "correctIndex": 3
   },
   {
     "topic": "Data Management",
-    "question": "What tool would you use to import/update more than 50,000 records?",
-    "answer": "Data Loader (supports bulk operations via the Bulk API, unlike Data Import Wizard which caps around 50,000 records)."
+    "question": "Which tool should an admin use to insert or update more than 50,000 records at once?",
+    "options": ["Data Import Wizard", "Data Loader", "Report Export", "Change Sets"],
+    "correctIndex": 1
   },
   {
     "topic": "Automation",
-    "question": "What has replaced Workflow Rules and Process Builder as Salesforce's recommended automation tool?",
-    "answer": "Flow (specifically Record-Triggered Flow for most workflow/process builder use cases)."
+    "question": "Which Salesforce automation tool is now recommended for record-triggered logic, replacing Workflow Rules and Process Builder?",
+    "options": ["Approval Processes", "Apex Triggers", "Flow", "Validation Rules"],
+    "correctIndex": 2
   },
   {
     "topic": "Automation",
-    "question": "What is the order of execution when a record is saved, in relation to validation rules and before-save flows?",
-    "answer": "System validation rules and before-save flows run before the record is committed, then after-save automation (after-save flows, workflow rules, processes, triggers) runs after."
+    "question": "Which of the following runs first during the record save order of execution?",
+    "options": ["After-save Flow", "Workflow Rule field update", "Validation Rule", "Apex trigger (after insert)"],
+    "correctIndex": 2
   },
   {
     "topic": "Reports & Dashboards",
-    "question": "What are the four report format types in Salesforce?",
-    "answer": "Tabular, Summary, Matrix, and Joined."
+    "question": "Which report format groups rows by more than one field and includes subtotals for each group plus a grand total?",
+    "options": ["Tabular", "Summary", "Matrix", "Joined"],
+    "correctIndex": 1
   },
   {
     "topic": "Reports & Dashboards",
-    "question": "How often can a dashboard refresh automatically at most?",
-    "answer": "Every 1 hour (via a scheduled refresh), though it can also be refreshed manually at any time."
+    "question": "What is the maximum frequency at which a dashboard can be scheduled to refresh automatically?",
+    "options": ["Every 15 minutes", "Every 1 hour", "Every 24 hours", "Dashboards cannot be scheduled"],
+    "correctIndex": 1
   },
   {
     "topic": "Sales & Service Cloud",
-    "question": "What feature routes cases to the right agent or queue automatically based on defined criteria?",
-    "answer": "Case Assignment Rules (or Omni-Channel routing for more advanced skill/capacity-based routing)."
+    "question": "Which feature automatically assigns incoming Cases to the correct queue or agent based on predefined criteria?",
+    "options": ["Web-to-Case", "Case Assignment Rules", "Escalation Rules", "Entitlement Process"],
+    "correctIndex": 1
   }
 ]

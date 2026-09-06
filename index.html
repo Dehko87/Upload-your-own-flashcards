@@ -37,21 +37,11 @@
           <span id="session-position"></span>
           <span id="session-topic-label"></span>
         </div>
-        <div id="flashcard" class="flashcard">
-          <div class="flashcard-inner">
-            <div class="flashcard-face flashcard-front">
-              <p id="card-question"></p>
-              <span class="flip-hint">Click to reveal answer</span>
-            </div>
-            <div class="flashcard-face flashcard-back">
-              <p id="card-answer"></p>
-            </div>
-          </div>
+        <div class="flashcard">
+          <p id="card-question"></p>
+          <div id="option-list" class="option-list"></div>
         </div>
-        <div id="grade-controls" class="grade-controls" hidden>
-          <button id="grade-wrong-btn" class="grade-btn wrong-btn">Got it wrong</button>
-          <button id="grade-right-btn" class="grade-btn right-btn">Got it right</button>
-        </div>
+        <button id="next-card-btn" class="primary-btn" hidden>Next Question</button>
         <button id="end-session-btn" class="text-btn">End session early</button>
       </div>
 
@@ -72,8 +62,25 @@
           <input type="text" id="card-topic" placeholder="e.g. Security & Access" required>
           <label for="card-question-input">Question</label>
           <textarea id="card-question-input" rows="2" required></textarea>
-          <label for="card-answer-input">Answer</label>
-          <textarea id="card-answer-input" rows="2" required></textarea>
+          <label>Options (select the correct one)</label>
+          <div class="option-inputs">
+            <div class="option-input-row">
+              <input type="radio" name="correct-option" value="0" checked>
+              <input type="text" class="option-text-input" placeholder="Option A" required>
+            </div>
+            <div class="option-input-row">
+              <input type="radio" name="correct-option" value="1">
+              <input type="text" class="option-text-input" placeholder="Option B" required>
+            </div>
+            <div class="option-input-row">
+              <input type="radio" name="correct-option" value="2">
+              <input type="text" class="option-text-input" placeholder="Option C" required>
+            </div>
+            <div class="option-input-row">
+              <input type="radio" name="correct-option" value="3">
+              <input type="text" class="option-text-input" placeholder="Option D" required>
+            </div>
+          </div>
           <button type="submit" class="primary-btn">Add Card</button>
         </form>
       </div>
@@ -81,8 +88,9 @@
       <div class="panel">
         <h2>Upload a Spreadsheet</h2>
         <p class="hint">
-          Add many cards at once from a <code>.csv</code> or <code>.xlsx</code> file with
-          <code>Topic</code>, <code>Question</code>, and <code>Answer</code> columns.
+          Add many multiple-choice cards at once from a <code>.csv</code> or <code>.xlsx</code> file with
+          <code>Topic</code>, <code>Question</code>, <code>Option A</code>&ndash;<code>Option D</code>,
+          and <code>Correct Option</code> (A, B, C, or D) columns.
           <a id="template-download-link" href="data/flashcard-template.xlsx" download="flashcard-template.xlsx">Download the template</a>,
           fill it in, then upload it below.
         </p>
@@ -92,7 +100,7 @@
 
       <div class="panel">
         <h2>Import / Export JSON</h2>
-        <p class="hint">Cards are stored as JSON: <code>[{"topic": "...", "question": "...", "answer": "..."}]</code></p>
+        <p class="hint">Cards are stored as JSON: <code>[{"topic": "...", "question": "...", "options": ["...", "...", "...", "..."], "correctIndex": 0}]</code> (<code>correctIndex</code> is the 0-based position of the right option).</p>
         <textarea id="import-textarea" rows="4" placeholder="Paste JSON here to import"></textarea>
         <div class="button-row">
           <button id="import-btn" class="secondary-btn">Import</button>
