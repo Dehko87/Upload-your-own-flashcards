@@ -79,7 +79,19 @@
       </div>
 
       <div class="panel">
-        <h2>Import / Export</h2>
+        <h2>Upload a Spreadsheet</h2>
+        <p class="hint">
+          Add many cards at once from a <code>.csv</code> or <code>.xlsx</code> file with
+          <code>Topic</code>, <code>Question</code>, and <code>Answer</code> columns.
+          <a id="template-download-link" href="data/flashcard-template.xlsx" download="flashcard-template.xlsx">Download the template</a>,
+          fill it in, then upload it below.
+        </p>
+        <input type="file" id="spreadsheet-input" accept=".csv,.xlsx,.xls">
+        <p id="spreadsheet-msg" class="import-msg"></p>
+      </div>
+
+      <div class="panel">
+        <h2>Import / Export JSON</h2>
         <p class="hint">Cards are stored as JSON: <code>[{"topic": "...", "question": "...", "answer": "..."}]</code></p>
         <textarea id="import-textarea" rows="4" placeholder="Paste JSON here to import"></textarea>
         <div class="button-row">
@@ -112,6 +124,7 @@
     </section>
   </main>
 
+  <script src="js/vendor/xlsx.full.min.js"></script>
   <script src="js/storage.js"></script>
   <script src="js/app.js"></script>
 </body>

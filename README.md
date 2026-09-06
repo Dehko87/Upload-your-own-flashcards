@@ -18,9 +18,12 @@ then visit `http://localhost:8000`.
 
 ## Adding your own cards
 
-Go to the **Manage Cards** tab. You can either:
+Go to the **Manage Cards** tab. You can:
 
-- Add cards one at a time with the form (Topic / Question / Answer), or
+- Add cards one at a time with the form (Topic / Question / Answer),
+- Upload a spreadsheet (`.csv` or `.xlsx`) with `Topic`, `Question`, and
+  `Answer` columns — download `data/flashcard-template.xlsx` from that tab,
+  fill it in, and upload it back to add every row as a card, or
 - Paste a JSON array into the Import box, in this shape:
 
 ```json

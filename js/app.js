@@ -208,6 +208,28 @@ function renderManageView() {
   });
 }
 
+function addCardsFromRecords(records) {
+  let added = 0;
+  records.forEach((item) => {
+    if (item && typeof item.question === "string" && typeof item.answer === "string" && item.question.trim() && item.answer.trim()) {
+      state.cards.push({
+        id: makeId(),
+        topic: (item.topic || "General").trim(),
+        question: item.question.trim(),
+        answer: item.answer.trim(),
+      });
+      added++;
+    }
+  });
+
+  if (added > 0) {
+    Storage.saveCards(state.cards);
+    Storage.markSeeded();
+    renderManageView();
+  }
+  return added;
+}
+
 function importCards(jsonText) {
   const msg = document.getElementById("import-msg");
   let parsed;
@@ -224,25 +246,56 @@ function importCards(jsonText) {
     return;
   }
 
-  let added = 0;
-  parsed.forEach((item) => {
-    if (item && typeof item.question === "string" && typeof item.answer === "string") {
-      state.cards.push({
-        id: makeId(),
-        topic: (item.topic || "General").trim(),
-        question: item.question.trim(),
-        answer: item.answer.trim(),
-      });
-      added++;
-    }
-  });
-
-  Storage.saveCards(state.cards);
-  Storage.markSeeded();
-  renderManageView();
+  const added = addCardsFromRecords(parsed);
   msg.style.color = "var(--success)";
   msg.textContent = `Imported ${added} card(s).`;
   document.getElementById("import-textarea").value = "";
+}
+
+const SPREADSHEET_FIELD_ALIASES = {
+  topic: "topic",
+  question: "question",
+  answer: "answer",
+};
+
+function normalizeSpreadsheetRow(row) {
+  const normalized = {};
+  Object.entries(row).forEach(([key, value]) => {
+    const field = SPREADSHEET_FIELD_ALIASES[key.trim().toLowerCase()];
+    if (field && typeof value === "string") normalized[field] = value;
+    else if (field && value != null) normalized[field] = String(value);
+  });
+  return normalized;
+}
+
+function importSpreadsheetFile(file) {
+  const msg = document.getElementById("spreadsheet-msg");
+  msg.style.color = "var(--muted)";
+  msg.textContent = "Reading file...";
+
+  const reader = new FileReader();
+  reader.onerror = () => {
+    msg.style.color = "var(--danger)";
+    msg.textContent = "Could not read that file.";
+  };
+  reader.onload = (e) => {
+    try {
+      const workbook = XLSX.read(e.target.result, { type: "array" });
+      const firstSheetName = workbook.SheetNames[0];
+      const rows = XLSX.utils.sheet_to_json(workbook.Sheets[firstSheetName], { defval: "" });
+      const records = rows.map(normalizeSpreadsheetRow);
+      const added = addCardsFromRecords(records);
+      msg.style.color = added > 0 ? "var(--success)" : "var(--danger)";
+      msg.textContent =
+        added > 0
+          ? `Imported ${added} card(s) from "${file.name}".`
+          : `No valid rows found in "${file.name}". Make sure it has Topic/Question/Answer columns.`;
+    } catch (err) {
+      msg.style.color = "var(--danger)";
+      msg.textContent = "Could not parse that file. Make sure it's a valid .csv or .xlsx.";
+    }
+  };
+  reader.readAsArrayBuffer(file);
 }
 
 function exportCards() {
@@ -357,6 +410,12 @@ function init() {
     if (text) importCards(text);
   });
   document.getElementById("export-btn").addEventListener("click", exportCards);
+
+  document.getElementById("spreadsheet-input").addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (file) importSpreadsheetFile(file);
+    e.target.value = "";
+  });
 
   renderStudySetup();
 }

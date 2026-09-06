@@ -235,6 +235,10 @@ input[type="text"], select, textarea {
 
 .import-msg { font-size: 0.85rem; color: var(--success); min-height: 1.2em; }
 
+input[type="file"] { margin-top: 0.75rem; font-size: 0.9rem; }
+
+.hint a { color: var(--primary); }
+
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
