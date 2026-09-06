@@ -386,21 +386,43 @@ function importSpreadsheetFile(file) {
     msg.textContent = "Could not read that file.";
   };
   reader.onload = (e) => {
+    let stage = "reading the workbook";
     try {
       const workbook = XLSX.read(e.target.result, { type: "array" });
-      const firstSheetName = workbook.SheetNames[0];
-      const rows = XLSX.utils.sheet_to_json(workbook.Sheets[firstSheetName], { defval: "" });
-      const records = rows.map(normalizeSpreadsheetRow);
+
+      stage = "finding a worksheet";
+      if (!workbook.SheetNames || workbook.SheetNames.length === 0) {
+        throw new Error("the file has no worksheet/table data");
+      }
+      const sheet = workbook.Sheets[workbook.SheetNames[0]];
+
+      stage = "reading rows from the worksheet";
+      const rows = XLSX.utils.sheet_to_json(sheet, { defval: "" });
+
+      stage = "matching columns to Topic/Question/Options/Correct Option";
+      const records = [];
+      let skipped = 0;
+      rows.forEach((row, i) => {
+        try {
+          records.push(normalizeSpreadsheetRow(row));
+        } catch (rowErr) {
+          skipped++;
+          console.error(`Skipping row ${i + 2} (could not read it):`, rowErr);
+        }
+      });
+
+      stage = "adding the cards";
       const added = addCardsFromRecords(records);
+      const skippedNote = skipped > 0 ? ` (${skipped} row(s) skipped — see console for details)` : "";
       msg.style.color = added > 0 ? "var(--success)" : "var(--danger)";
       msg.textContent =
         added > 0
-          ? `Imported ${added} card(s) from "${file.name}".`
-          : `No valid rows found in "${file.name}". Make sure it has Topic/Question/Option A-H/Correct Option columns.`;
+          ? `Imported ${added} card(s) from "${file.name}".${skippedNote}`
+          : `No valid rows found in "${file.name}".${skippedNote} Make sure it has Topic/Question/Option A-H/Correct Option columns.`;
     } catch (err) {
-      console.error("Spreadsheet import failed:", err);
+      console.error(`Spreadsheet import failed while ${stage}:`, err);
       msg.style.color = "var(--danger)";
-      msg.textContent = `Could not parse that file: ${err.message || err}`;
+      msg.textContent = `Could not parse that file while ${stage}: ${err.message || err}`;
     }
   };
   reader.readAsArrayBuffer(file);
