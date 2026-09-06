@@ -24,8 +24,24 @@ const state = {
   session: null,
 };
 
+function migrateCard(raw) {
+  if (Array.isArray(raw.correctIndexes) && Array.isArray(raw.options)) return raw;
+  // Cards saved by an older version of this app used a single `correctIndex` instead
+  // of `correctIndexes`. Older still, cards were free-text (no `options` at all) —
+  // those can't be turned into multiple choice automatically, so they're dropped.
+  if (Number.isInteger(raw.correctIndex) && Array.isArray(raw.options)) {
+    const { correctIndex, ...rest } = raw;
+    return { ...rest, correctIndexes: [correctIndex] };
+  }
+  return null;
+}
+
 function loadCards() {
-  state.cards = Storage.getCards();
+  const stored = Storage.getCards();
+  const migrated = stored.map(migrateCard).filter(Boolean);
+  if (migrated.length !== stored.length) Storage.saveCards(migrated);
+  state.cards = migrated;
+
   if (state.cards.length === 0 && !Storage.hasSeeded()) {
     state.cards = STARTER_DECK.map((c) => ({ id: makeId(), ...c }));
     Storage.saveCards(state.cards);
