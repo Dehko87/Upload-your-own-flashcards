@@ -1,6 +1,7 @@
 const OPTION_LETTERS = ["A", "B", "C", "D", "E", "F", "G", "H"];
 const MIN_OPTIONS = 4;
 const MAX_OPTIONS = 8;
+const THEME_KEY = "sfdc_flashcards_theme";
 
 const STARTER_DECK = [
   { topic: "Security & Access", question: "Which single component must every Salesforce user be assigned exactly one of, to set their baseline object, field, and app permissions?", options: ["Permission Set", "Permission Set Group", "Profile", "Public Group"], correctIndexes: [2] },
@@ -588,10 +589,36 @@ function escapeHtml(str) {
   return div.innerHTML;
 }
 
+// ---------- Theme ----------
+
+function getEffectiveTheme() {
+  const stored = localStorage.getItem(THEME_KEY);
+  if (stored === "light" || stored === "dark") return stored;
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
+function updateThemeToggleButton() {
+  const btn = document.getElementById("theme-toggle-btn");
+  btn.textContent = getEffectiveTheme() === "dark" ? "☀️ Light" : "🌙 Dark";
+}
+
+function toggleTheme() {
+  const next = getEffectiveTheme() === "dark" ? "light" : "dark";
+  localStorage.setItem(THEME_KEY, next);
+  document.documentElement.setAttribute("data-theme", next);
+  updateThemeToggleButton();
+}
+
+function initTheme() {
+  updateThemeToggleButton();
+}
+
 // ---------- Init ----------
 
 function init() {
   loadCards();
+  initTheme();
+  document.getElementById("theme-toggle-btn").addEventListener("click", toggleTheme);
 
   document.querySelectorAll(".tab-btn").forEach((btn) => {
     btn.addEventListener("click", () => switchView(btn.dataset.view));

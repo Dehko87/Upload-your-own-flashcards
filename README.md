@@ -16,6 +16,12 @@ python3 -m http.server 8000
 
 then visit `http://localhost:8000`.
 
+## Dark mode
+
+The app follows your system's light/dark preference automatically. Click the
+🌙 Dark / ☀️ Light button in the top-right corner to override it manually —
+your choice is remembered (in `localStorage`) for next time.
+
 ## Adding your own cards
 
 Every card is a multiple-choice question: a topic, a question, 4–8 answer

@@ -7,8 +7,58 @@
   --primary: #0b5cad;
   --primary-hover: #084a8a;
   --success: #1a7f4b;
+  --success-soft: #eafaf1;
   --danger: #b3261e;
+  --danger-soft: #fdedeb;
+  --accent-soft: #eaf2fb;
+  --flashcard-bg: #eef4fb;
+  --track-bg: #eceff2;
+  --multi-tag-text: #8a5a00;
+  --multi-tag-bg: #fdf1da;
   --radius: 10px;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #10161f;
+    --panel-bg: #1b232f;
+    --text: #e7ecf2;
+    --muted: #8a97a6;
+    --border: #2b3542;
+    --primary: #4f9cea;
+    --primary-hover: #6badf0;
+    --success: #3fbd83;
+    --success-soft: #163524;
+    --danger: #e2695c;
+    --danger-soft: #3a221e;
+    --accent-soft: #1c2c3f;
+    --flashcard-bg: #182432;
+    --track-bg: #26303c;
+    --multi-tag-text: #e0b155;
+    --multi-tag-bg: #3a2f14;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #10161f;
+  --panel-bg: #1b232f;
+  --text: #e7ecf2;
+  --muted: #8a97a6;
+  --border: #2b3542;
+  --primary: #4f9cea;
+  --primary-hover: #6badf0;
+  --success: #3fbd83;
+  --success-soft: #163524;
+  --danger: #e2695c;
+  --danger-soft: #3a221e;
+  --accent-soft: #1c2c3f;
+  --flashcard-bg: #182432;
+  --track-bg: #26303c;
+  --multi-tag-text: #e0b155;
+  --multi-tag-bg: #3a2f14;
+  color-scheme: dark;
 }
 
 * { box-sizing: border-box; }
@@ -26,10 +76,31 @@ body {
   padding: 1rem 1.5rem;
 }
 
+.header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
 .app-header h1 {
-  margin: 0 0 0.75rem;
+  margin: 0;
   font-size: 1.25rem;
 }
+
+.theme-toggle-btn {
+  flex: none;
+  font-family: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--panel-bg);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 0.4rem 0.8rem;
+}
+.theme-toggle-btn:hover { border-color: var(--primary); }
 
 .tabs {
   display: flex;
@@ -98,7 +169,7 @@ input[type="text"], select, textarea {
   border-radius: 8px;
   font-size: 0.95rem;
   font-family: inherit;
-  background: #fff;
+  background: var(--panel-bg);
   color: var(--text);
 }
 
@@ -120,7 +191,7 @@ input[type="text"], select, textarea {
 .primary-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .secondary-btn {
-  background: #fff;
+  background: var(--panel-bg);
   border: 1px solid var(--border);
   padding: 0.55rem 1rem;
   color: var(--text);
@@ -159,7 +230,7 @@ input[type="text"], select, textarea {
 .flashcard {
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  background: #eef4fb;
+  background: var(--flashcard-bg);
   padding: 1.5rem;
 }
 
@@ -193,7 +264,7 @@ input[type="text"], select, textarea {
   padding: 0.65rem 0.9rem;
   border: 1px solid var(--border);
   border-radius: 8px;
-  background: #fff;
+  background: var(--panel-bg);
   font-family: inherit;
   font-size: 0.95rem;
   color: var(--text);
@@ -218,19 +289,19 @@ input[type="text"], select, textarea {
 }
 
 .option-btn.correct {
-  background: #eafaf1;
+  background: var(--success-soft);
   border-color: var(--success);
 }
 .option-btn.correct .option-letter { background: var(--success); color: #fff; }
 
 .option-btn.incorrect {
-  background: #fdedeb;
+  background: var(--danger-soft);
   border-color: var(--danger);
 }
 .option-btn.incorrect .option-letter { background: var(--danger); color: #fff; }
 
 .option-btn.selected {
-  background: #eaf2fb;
+  background: var(--accent-soft);
   border-color: var(--primary);
 }
 .option-btn.selected .option-letter { background: var(--primary); color: #fff; }
@@ -259,7 +330,7 @@ input[type="text"], select, textarea {
   height: 1.6rem;
   border: 1px solid var(--border);
   border-radius: 6px;
-  background: #fff;
+  background: var(--panel-bg);
   color: var(--muted);
   cursor: pointer;
   font-size: 0.9rem;
@@ -286,7 +357,7 @@ input[type="text"], select, textarea {
   display: inline-block;
   font-size: 0.75rem;
   color: var(--primary);
-  background: #eaf2fb;
+  background: var(--accent-soft);
   border-radius: 999px;
   padding: 0.1rem 0.6rem;
   margin-bottom: 0.4rem;
@@ -294,8 +365,8 @@ input[type="text"], select, textarea {
 }
 
 .card-item .card-topic-tag.multi-tag {
-  color: #8a5a00;
-  background: #fdf1da;
+  color: var(--multi-tag-text);
+  background: var(--multi-tag-bg);
 }
 
 .card-item .card-q { font-weight: 600; margin: 0.2rem 0; }
@@ -349,7 +420,7 @@ input[type="file"] { margin-top: 0.75rem; font-size: 0.9rem; }
 }
 
 .mastery-bar-track {
-  background: #eceff2;
+  background: var(--track-bg);
   border-radius: 999px;
   height: 8px;
   overflow: hidden;
