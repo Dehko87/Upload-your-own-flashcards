@@ -3,6 +3,7 @@ const Storage = (() => {
   const STATS_KEY = "sfdc_flashcards_card_stats";
   const SESSIONS_KEY = "sfdc_flashcards_sessions";
   const SEEDED_KEY = "sfdc_flashcards_seeded";
+  const IN_PROGRESS_KEY = "sfdc_flashcards_inprogress";
 
   function getCards() {
     return JSON.parse(localStorage.getItem(CARDS_KEY) || "[]");
@@ -45,10 +46,24 @@ const Storage = (() => {
     localStorage.setItem(SEEDED_KEY, "true");
   }
 
+  function getInProgressSession() {
+    const raw = localStorage.getItem(IN_PROGRESS_KEY);
+    return raw ? JSON.parse(raw) : null;
+  }
+
+  function saveInProgressSession(session) {
+    localStorage.setItem(IN_PROGRESS_KEY, JSON.stringify(session));
+  }
+
+  function clearInProgressSession() {
+    localStorage.removeItem(IN_PROGRESS_KEY);
+  }
+
   return {
     getCards, saveCards,
     getCardStats, saveCardStats, recordAnswer,
     getSessions, addSession,
     hasSeeded, markSeeded,
+    getInProgressSession, saveInProgressSession, clearInProgressSession,
   };
 })();

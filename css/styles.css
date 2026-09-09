@@ -219,6 +219,15 @@ input[type="text"], select, textarea {
 
 .empty-msg { color: var(--muted); margin-top: 1rem; }
 
+.resume-banner {
+  border-color: var(--primary);
+  background: var(--accent-soft);
+}
+.resume-banner h2 { color: var(--primary); }
+.resume-banner-detail { color: var(--muted); margin: 0.25rem 0 0; }
+.resume-banner .button-row { margin-top: 1rem; }
+.resume-banner .text-btn { margin-top: 0; }
+
 .session-progress {
   display: flex;
   justify-content: space-between;

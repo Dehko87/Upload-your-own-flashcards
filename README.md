@@ -56,7 +56,10 @@ option count, and some ask you to pick more than one ("Choose 2", "Choose
 (`correctIndexes` lists the 0-based position(s) of the right option(s) in
 the `options` array — more than one entry makes it a "choose N" question.)
 Use **Export All Cards** to download your current deck as JSON (useful for
-backing up or editing in bulk, then re-importing).
+backing up or editing in bulk, then re-importing). Importing (spreadsheet or
+JSON) skips any card that's an exact duplicate of one already in your deck
+(same topic, question, and options) — safe to re-upload the same file
+without doubling your cards.
 
 The app ships with a small starter deck (`data/starter-deck.json`, also
 inlined in `js/app.js`) covering a few core exam topics so there's something
@@ -82,6 +85,11 @@ In the **Study** tab, pick a topic (or "All Topics") and an order
 Click "Next Question" to continue. At the end of a session you'll see your
 score and a per-topic breakdown.
 
+If you leave mid-session — switch tabs, close the browser, reload the page —
+your progress is saved automatically. Next time you open the **Study** tab
+you'll see a "Resume where you left off?" prompt showing which question
+you're on, with the option to resume or discard it and start fresh.
+
 ## Progress
 
 The **Progress** tab shows:
@@ -95,6 +103,7 @@ Everything lives in `localStorage` under these keys:
 - `sfdc_flashcards_cards` — your deck
 - `sfdc_flashcards_card_stats` — per-card correct/wrong counts
 - `sfdc_flashcards_sessions` — session history
+- `sfdc_flashcards_inprogress` — the current in-progress session, if any (cleared once a session finishes or is discarded)
 
 Clearing your browser's site data for this page will reset all cards and
 progress.

@@ -75,6 +75,11 @@ function switchView(viewName) {
 // ---------- Study: setup ----------
 
 function renderStudySetup() {
+  if (state.session) {
+    resumeActiveSession();
+    return;
+  }
+
   document.getElementById("study-setup").hidden = false;
   document.getElementById("study-session").hidden = true;
   document.getElementById("study-results").hidden = true;
@@ -88,6 +93,74 @@ function renderStudySetup() {
   const noCards = state.cards.length === 0;
   document.getElementById("no-cards-msg").hidden = !noCards;
   document.getElementById("start-session-btn").disabled = noCards;
+
+  renderResumeBanner();
+}
+
+function renderResumeBanner() {
+  const banner = document.getElementById("resume-banner");
+  const saved = Storage.getInProgressSession();
+
+  if (!saved || !Array.isArray(saved.queue) || saved.index >= saved.queue.length) {
+    banner.hidden = true;
+    if (saved) Storage.clearInProgressSession();
+    return;
+  }
+
+  banner.hidden = false;
+  document.getElementById("resume-banner-detail").textContent =
+    `${saved.topicLabel} — Question ${saved.index + 1} of ${saved.queue.length}`;
+}
+
+// Same-page session already in memory (e.g. switched to another tab and back) — jump
+// straight back in instead of showing the setup screen.
+function resumeActiveSession() {
+  document.getElementById("study-setup").hidden = true;
+  document.getElementById("study-results").hidden = true;
+  document.getElementById("study-session").hidden = false;
+  if (state.session.answered) {
+    goToNextCard();
+  } else {
+    showCurrentCard();
+  }
+}
+
+// A session saved to localStorage from an earlier visit (page reload, browser closed, etc.).
+function resumeSavedSession() {
+  const saved = Storage.getInProgressSession();
+  if (!saved) return;
+
+  state.session = {
+    queue: saved.queue,
+    index: saved.index,
+    correctCount: saved.correctCount,
+    graded: saved.graded,
+    answered: false,
+    selected: new Set(),
+    topicLabel: saved.topicLabel,
+  };
+
+  document.getElementById("study-setup").hidden = true;
+  document.getElementById("study-results").hidden = true;
+  document.getElementById("study-session").hidden = false;
+  showCurrentCard();
+}
+
+function discardSavedSession() {
+  Storage.clearInProgressSession();
+  renderStudySetup();
+}
+
+function persistSession() {
+  const s = state.session;
+  if (!s) return;
+  Storage.saveInProgressSession({
+    queue: s.queue,
+    index: s.index,
+    correctCount: s.correctCount,
+    graded: s.graded,
+    topicLabel: s.topicLabel,
+  });
 }
 
 function startSession() {
@@ -111,6 +184,7 @@ function startSession() {
     selected: new Set(),
     topicLabel: topic === "__all__" ? "All Topics" : topic,
   };
+  persistSession();
 
   document.getElementById("study-setup").hidden = true;
   document.getElementById("study-results").hidden = true;
@@ -212,6 +286,7 @@ function goToNextCard() {
   const s = state.session;
   if (s.index + 1 < s.queue.length) {
     s.index++;
+    persistSession();
     showCurrentCard();
   } else {
     finishSession();
@@ -222,6 +297,8 @@ function endSessionEarly() {
   if (state.session && state.session.graded.length > 0) {
     finishSession();
   } else {
+    state.session = null;
+    Storage.clearInProgressSession();
     switchView("study");
   }
 }
@@ -257,6 +334,7 @@ function finishSession() {
     .join("");
 
   state.session = null;
+  Storage.clearInProgressSession();
 }
 
 // ---------- Manage cards ----------
@@ -350,19 +428,41 @@ function isValidCardRecord(item) {
   );
 }
 
+function cardSignature(topic, question, options) {
+  return [
+    topic.trim().toLowerCase(),
+    question.trim().toLowerCase(),
+    options.map((o) => o.trim().toLowerCase()).join("|"),
+  ].join("::");
+}
+
 function addCardsFromRecords(records) {
+  const seenSignatures = new Set(state.cards.map((c) => cardSignature(c.topic, c.question, c.options)));
   let added = 0;
+  let duplicates = 0;
+
   records.forEach((item) => {
-    if (isValidCardRecord(item)) {
-      state.cards.push({
-        id: makeId(),
-        topic: (item.topic || "General").trim(),
-        question: item.question.trim(),
-        options: item.options.map((o) => String(o).trim()),
-        correctIndexes: [...item.correctIndexes].sort((a, b) => a - b),
-      });
-      added++;
+    if (!isValidCardRecord(item)) return;
+
+    const topic = (item.topic || "General").trim();
+    const question = item.question.trim();
+    const options = item.options.map((o) => String(o).trim());
+    const signature = cardSignature(topic, question, options);
+
+    if (seenSignatures.has(signature)) {
+      duplicates++;
+      return;
     }
+    seenSignatures.add(signature);
+
+    state.cards.push({
+      id: makeId(),
+      topic,
+      question,
+      options,
+      correctIndexes: [...item.correctIndexes].sort((a, b) => a - b),
+    });
+    added++;
   });
 
   if (added > 0) {
@@ -370,7 +470,7 @@ function addCardsFromRecords(records) {
     Storage.markSeeded();
     renderManageView();
   }
-  return added;
+  return { added, duplicates };
 }
 
 function importCards(jsonText) {
@@ -389,9 +489,10 @@ function importCards(jsonText) {
     return;
   }
 
-  const added = addCardsFromRecords(parsed);
+  const { added, duplicates } = addCardsFromRecords(parsed);
+  const duplicateNote = duplicates > 0 ? ` (${duplicates} duplicate(s) skipped)` : "";
   msg.style.color = "var(--success)";
-  msg.textContent = `Imported ${added} card(s).`;
+  msg.textContent = `Imported ${added} card(s).${duplicateNote}`;
   document.getElementById("import-textarea").value = "";
 }
 
@@ -456,13 +557,16 @@ function importSpreadsheetFile(file) {
       });
 
       stage = "adding the cards";
-      const added = addCardsFromRecords(records);
-      const skippedNote = skipped > 0 ? ` (${skipped} row(s) skipped — see console for details)` : "";
+      const { added, duplicates } = addCardsFromRecords(records);
+      const notes = [];
+      if (duplicates > 0) notes.push(`${duplicates} duplicate(s) already in your deck skipped`);
+      if (skipped > 0) notes.push(`${skipped} unreadable row(s) skipped — see console for details`);
+      const noteText = notes.length > 0 ? ` (${notes.join("; ")})` : "";
       msg.style.color = added > 0 ? "var(--success)" : "var(--danger)";
       msg.textContent =
         added > 0
-          ? `Imported ${added} card(s) from "${file.name}".${skippedNote}`
-          : `No valid rows found in "${file.name}".${skippedNote} Make sure it has Topic/Question/Option A-H/Correct Option columns.`;
+          ? `Imported ${added} card(s) from "${file.name}".${noteText}`
+          : `No new cards found in "${file.name}".${noteText} Make sure it has Topic/Question/Option A-H/Correct Option columns.`;
     } catch (err) {
       console.error(`Spreadsheet import failed while ${stage}:`, err);
       msg.style.color = "var(--danger)";
@@ -625,6 +729,8 @@ function init() {
   });
 
   document.getElementById("start-session-btn").addEventListener("click", startSession);
+  document.getElementById("resume-session-btn").addEventListener("click", resumeSavedSession);
+  document.getElementById("discard-session-btn").addEventListener("click", discardSavedSession);
   document.getElementById("submit-answer-btn").addEventListener("click", submitMultiAnswer);
   document.getElementById("next-card-btn").addEventListener("click", goToNextCard);
   document.getElementById("end-session-btn").addEventListener("click", endSessionEarly);
